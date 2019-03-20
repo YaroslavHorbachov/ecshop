@@ -11,7 +11,7 @@ import {
   RegisterComponent,
 } from './pages';
 
-export default () => (
+export const App = () => (
   <>
     <CssBaseline />
     <Router history={history}>
