@@ -1,3 +1,5 @@
+import { createContext } from 'react';
+import { AuthService, authService } from './auth';
 import {
   AboutStore,
   aboutStore,
@@ -14,6 +16,7 @@ export interface IAppStores {
   home: HomeStore;
   login: LoginStore;
   register: RegisterStore;
+  auth: AuthService;
 }
 
 export const appStores = {
@@ -21,4 +24,7 @@ export const appStores = {
   home: homeStore,
   login: loginStore,
   register: registerStore,
+  auth: authService,
 };
+
+export const storeContext = createContext(appStores);

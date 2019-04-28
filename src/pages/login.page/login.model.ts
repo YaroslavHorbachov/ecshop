@@ -1,20 +1,21 @@
+import { AxiosInstance } from 'axios';
 import { action, observable } from 'mobx';
 import { ILoginFormValues } from '.';
-import {
-  CredentialsEnum,
-  DefaultCredentialsEnum,
-  ValidCredentialsEnum,
-} from './login.enum';
+import { signInUser } from './login.api';
+import { CredentialsEnum, DefaultCredentialsEnum } from './login.enum';
 
 export class LoginStore {
   @observable public emailAddress: string = DefaultCredentialsEnum.emailAddress;
+
   @observable public password: string = DefaultCredentialsEnum.password;
+
   @observable public rememberMe = false;
 
   constructor() {
     const isFormPristine =
       this.emailAddress === DefaultCredentialsEnum.emailAddress &&
       this.password === DefaultCredentialsEnum.password;
+
     if (isFormPristine) {
       const values = [
         localStorage.getItem(CredentialsEnum.email),
@@ -55,20 +56,22 @@ export class LoginStore {
     }
   }
 
-  public signIn({ rememberMe, emailAddress, password }: ILoginFormValues) {
+  public async signIn(
+    apiInstance: AxiosInstance,
+    { rememberMe, emailAddress, password }: ILoginFormValues,
+  ) {
     this.setEmailAddress(emailAddress);
     this.setPassword(password);
     this.setRememberMe(rememberMe);
-    const isValid =
-      emailAddress === ValidCredentialsEnum.emailAddress &&
-      password === ValidCredentialsEnum.password;
 
-    if (isValid && rememberMe) {
+    const { token } = await signInUser(apiInstance, { emailAddress, password });
+
+    if (token && rememberMe) {
       localStorage.setItem(CredentialsEnum.email, emailAddress);
       localStorage.setItem(CredentialsEnum.password, password);
     }
 
-    return isValid;
+    return token;
   }
 }
 

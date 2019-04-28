@@ -11,19 +11,19 @@ import { headerRoutes } from './header.constants';
 export interface IAppHeaderProps extends RouteComponentProps<{}> {}
 
 class AppHeader extends Component<IAppHeaderProps> {
-  public hanldeCloseRoute = (
+  public handleCloseRoute = (
     e: React.MouseEvent<SVGSVGElement, MouseEvent>,
   ) => {
     e.preventDefault();
     history.push(AppNavigationEnum.Home);
   }
 
-  public renderRotueIcon = (to: AppNavigationEnum) => {
+  public renderRouteIcon = (to: AppNavigationEnum) => {
     const { pathname } = this.props.location;
 
     switch (to) {
       case pathname: {
-        return <Close onClick={this.hanldeCloseRoute} />;
+        return <Close onClick={this.handleCloseRoute} />;
       }
       case AppNavigationEnum.Menu: {
         return <Menu />;
@@ -46,7 +46,7 @@ class AppHeader extends Component<IAppHeaderProps> {
         {headerRoutes.map(({ label, to }) => (
           <Grid item xs={3} xl={3} key={`${label}-${to}`}>
             <Link to={to}>
-              {this.renderRotueIcon(to)}
+              {this.renderRouteIcon(to)}
               {label}
             </Link>
           </Grid>

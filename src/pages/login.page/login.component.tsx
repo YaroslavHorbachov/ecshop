@@ -2,7 +2,9 @@ import { Grid } from '@material-ui/core';
 import { FormikActions, FormikValues } from 'formik';
 import { observer, useObservable } from 'mobx-react-lite';
 import * as React from 'react';
+import { useCallback, useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { storeContext } from '..';
 import { AppNavigationEnum } from '../../app.navigation';
 import history from '../../history';
 import { LoginFormComponent } from './login-form.component';
@@ -18,26 +20,30 @@ export interface ILoginFormValues {
 
 export const LoginComponent = observer(() => {
   const store = useObservable(loginStore);
-  const handleSubmit = React.useCallback(
-    (values: ILoginFormValues, formikActions: FormikActions<FormikValues>) => {
-      const isValid = store.signIn(values);
-      if (isValid) {
+  const { auth } = useContext(storeContext);
+  const handleSubmit = useCallback(
+    async (
+      values: ILoginFormValues,
+      formikActions: FormikActions<FormikValues>,
+    ) => {
+      const token = await store.signIn(auth.getInstance(), values); // TODO. Move to separate file
+
+      if (token) {
+        auth.setToken(token);
         history.push('/profile');
       }
-      formikActions.setSubmitting(isValid);
-    },
-    [],
-  );
-  const handleChange = React.useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const action = store.getAction(e.target.name);
 
-      if (action) {
-        action(e.target.value as never);
-      }
+      formikActions.setSubmitting(false);
     },
     [],
   );
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const action = store.getAction(e.target.name);
+
+    if (action) {
+      action(e.target.value as never);
+    }
+  },                               []);
   const getInitialValues = ({
     emailAddress,
     password,
